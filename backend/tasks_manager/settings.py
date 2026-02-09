@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv(
     "django-insecure-=n+z+((w*sa(wcfi!#v+5l96jg=r7bc@2d%a_weupas*-fe_mu"
 )
 
-DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "urbantrends.dev",
