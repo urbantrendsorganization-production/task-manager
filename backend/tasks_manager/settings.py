@@ -18,7 +18,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "urbantrends.dev",
-    "te.urbantrends.dev"
+    "te.urbantrends.dev",
     "www.urbantrends.dev",
     "api.urbantrends.dev",
     "127.0.0.1",
