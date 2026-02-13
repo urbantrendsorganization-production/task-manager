@@ -5,6 +5,9 @@ Django settings for tasks_manager project.
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,15 +19,7 @@ SECRET_KEY = os.getenv(
 
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "urbantrends.dev",
-    "te.urbantrends.dev",
-    "www.urbantrends.dev",
-    "api.urbantrends.dev",
-    "127.0.0.1",
-    "localhost",
-    "149.102.132.191",
-]
+ALLOWED_HOSTS = ['*']
 
 # Required for Traefik / reverse proxy
 CSRF_TRUSTED_ORIGINS = [
@@ -79,18 +74,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'tasks_manager.wsgi.application'
 
 # DATABASE
-# DATABASES = {
-#     "default": dj_database_url.config(
-#         default=os.getenv("DATABASE_URL"),
-#         conn_max_age=600,
-#     )
-# }
-
 DATABASES = {
     "default": dj_database_url.config(
-        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}"
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
     )
 }
+
+# DATABASES = {
+#     "default": dj_database_url.config(
+#         default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}"
+#     )
+# }
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
