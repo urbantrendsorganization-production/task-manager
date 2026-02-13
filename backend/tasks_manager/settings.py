@@ -20,7 +20,7 @@ SECRET_KEY = os.getenv(
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['149.102.132.191', '127.0.0.1']
+ALLOWED_HOSTS = ['149.102.132.191', '127.0.0.1', 'te.urbantrends.dev']
 
 # Required for Traefik / reverse proxy
 CSRF_TRUSTED_ORIGINS = [
