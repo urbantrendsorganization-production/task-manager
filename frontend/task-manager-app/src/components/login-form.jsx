@@ -14,9 +14,11 @@ import { ArrowLeft, GalleryVerticalEnd } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
 import { useState } from "react"
 import { toast } from "sonner"
+
+import { useAuth } from "./auth-context"
+import api from "@/lib/apis"
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -26,6 +28,7 @@ const loginSchema = z.object({
 export function LoginForm({ className, ...props }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
 
   const {
     register,
@@ -39,22 +42,22 @@ export function LoginForm({ className, ...props }) {
     try {
       setLoading(true)
 
-      const res = await axios.post(
-        "https://te.urbantrends.dev/auth/login/",
-        {
-          username: data.username,
-          password: data.password,
-        }
-      )
+      const res = await api.post("auth/login/", {
+        username: data.username,
+        password: data.password,
+      })
 
-      // Save token if backend returns one
-      if (res.data.token) localStorage.setItem("token", res.data.token)
+      // backend response:
+      // { user, accessToken, refreshToken }
+      login(res.data)
 
-      toast.success("Login successful 🎉")
+      toast.success("Login successful! Redirecting...")
+
+      console.log("Login response:", res.data)
 
       setTimeout(() => {
-        navigate("/dashboard") // change to your actual route
-      }, 1200)
+        navigate("/dashboard")
+      }, 1000)
 
     } catch (error) {
       if (error.response?.data) {
@@ -90,11 +93,12 @@ export function LoginForm({ className, ...props }) {
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
-              <span className="sr-only">Acme Inc.</span>
+              <span className="sr-only">TaskFlow</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to TaskFlow.</h1>
+
+            <h1 className="text-xl font-bold">Welcome to TaskFlow</h1>
             <FieldDescription>
-              Don't have an account? <a href="/sign">Sign up</a>
+              Don&apos;t have an account? <a href="/sign">Sign up</a>
             </FieldDescription>
           </div>
 
@@ -140,7 +144,7 @@ export function LoginForm({ className, ...props }) {
 
           <Field className="grid gap-4 sm:grid-cols-2">
             <Button variant="outline" type="button">
-              Continue with Github
+              Continue with GitHub
             </Button>
             <Button variant="outline" type="button">
               Continue with Google

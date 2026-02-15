@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useState } from "react"
 import { toast } from "sonner"
+import api from "@/lib/apis"
 
 const signupSchema = z
   .object({
@@ -52,8 +53,8 @@ export function SignupForm({ className, ...props }) {
     try {
       setLoading(true)
 
-      await axios.post(
-        "https://te.urbantrends.dev/auth/create/",
+      await api.post(
+        "auth/create/",
         {
           username: data.username,
           email: data.email,
