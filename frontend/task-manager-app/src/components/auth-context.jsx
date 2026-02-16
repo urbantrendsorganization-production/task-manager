@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 const AuthContext = createContext(null)
 
@@ -15,6 +16,7 @@ function getStoredToken() {
 // ---- provider ----
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(getStoredUser)
+  const navigate = useNavigate()
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!getStoredToken()
   )
@@ -34,6 +36,7 @@ export function AuthProvider({ children }) {
 
     setUser(user)
     setIsAuthenticated(true)
+    navigate("/dashboard")
   }
 
   // ---- logout ----
@@ -44,6 +47,7 @@ export function AuthProvider({ children }) {
 
     setUser(null)
     setIsAuthenticated(false)
+    navigate("/login")
   }
 
   // ---- sync across tabs ----
