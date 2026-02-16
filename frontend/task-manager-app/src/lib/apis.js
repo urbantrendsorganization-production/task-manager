@@ -28,7 +28,7 @@ api.interceptors.response.use(
 
         // Call refresh endpoint
         const res = await axios.post(
-          "https://te.urbantrends.dev/auth/token/refresh",
+          "https://te.urbantrends.dev/auth/token/refresh/",
           { refresh: refreshToken }
         )
 
