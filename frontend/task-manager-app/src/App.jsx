@@ -1,24 +1,46 @@
-import React from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import Sign from './pages/Sign'
-import Login from './pages/Login'
-import { Toaster } from 'sonner'
-import Dashboard from './pages/Dashboard'
-import { CoffeeFocusTimer } from './pages/coffee-focus-timer'
+import React from "react"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Toaster } from "sonner"
+
+import Home from "./pages/Home"
+import Sign from "./pages/Sign"
+import Login from "./pages/Login"
+import Dashboard from "./pages/Dashboard"
+import { CoffeeFocusTimer } from "./pages/coffee-focus-timer"
+
+import { AuthProvider } from "./components/auth-context"
+import PrivateRoute from "./components/protected-route"
 
 function App() {
   return (
-    <>
-      <Routes>
-        <Route path='/' element={<Home />}/>
-        <Route path='/sign' element={<Sign />}/>
-        <Route path='/login' element={<Login />}/>
-        <Route path='/dashboard' element={<Dashboard />}/>
-        <Route path='/timer' element={<CoffeeFocusTimer />}/>
-      </Routes>
-      <Toaster position='top-right' richColors/>
-    </>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/sign" element={<Sign />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/timer"
+            element={
+              <PrivateRoute>
+                <CoffeeFocusTimer />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+
+        <Toaster position="top-right" richColors />
+      </AuthProvider>
   )
 }
 

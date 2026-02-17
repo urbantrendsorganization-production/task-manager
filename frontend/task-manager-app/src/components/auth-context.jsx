@@ -1,53 +1,40 @@
 import { createContext, useContext, useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 
 const AuthContext = createContext(null)
 
 // ---- helpers ----
-function getStoredUser() {
-  const user = localStorage.getItem("user")
-  return user ? JSON.parse(user) : null
+const getStoredUser = () => {
+  const u = localStorage.getItem("user")
+  return u ? JSON.parse(u) : null
 }
 
-function getStoredToken() {
-  return localStorage.getItem("accessToken")
-}
+const getStoredToken = () => localStorage.getItem("accessToken")
 
-// ---- provider ----
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(getStoredUser)
-  const navigate = useNavigate()
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!getStoredToken()
-  )
+  const [user, setUser] = useState(() => getStoredUser())
+  const [isAuthenticated, setIsAuthenticated] = useState(!!getStoredToken())
+  const [loading, setLoading] = useState(true) // ✅ wait for initial token check
 
   // ---- login ----
-  const login = (response) => {
-    const { user, accessToken, refreshToken } = response
+  const login = ({ user, accessToken, refreshToken }) => {
+    if (!user || !accessToken || !refreshToken) return
 
-    if (!user || !accessToken || !refreshToken) {
-      console.error("Invalid login response", response)
-      return
-    }
-
+    localStorage.setItem("user", JSON.stringify(user))
     localStorage.setItem("accessToken", accessToken)
     localStorage.setItem("refreshToken", refreshToken)
-    localStorage.setItem("user", JSON.stringify(user))
 
     setUser(user)
     setIsAuthenticated(true)
-    navigate("/dashboard")
   }
 
   // ---- logout ----
   const logout = () => {
+    localStorage.removeItem("user")
     localStorage.removeItem("accessToken")
     localStorage.removeItem("refreshToken")
-    localStorage.removeItem("user")
 
     setUser(null)
     setIsAuthenticated(false)
-    navigate("/login")
   }
 
   // ---- sync across tabs ----
@@ -56,31 +43,24 @@ export function AuthProvider({ children }) {
       setUser(getStoredUser())
       setIsAuthenticated(!!getStoredToken())
     }
-
     window.addEventListener("storage", handleStorageChange)
-    return () =>
-      window.removeEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
+  }, [])
+
+  // ---- initial load ----
+  useEffect(() => {
+    setLoading(false) // finished checking token
   }, [])
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-// ---- hook ----
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider")
-  }
+  if (!context) throw new Error("useAuth must be inside AuthProvider")
   return context
 }

@@ -1,24 +1,16 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field"
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { ArrowLeft, GalleryVerticalEnd } from "lucide-react"
-
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
-
-import { useAuth } from "./auth-context"
 import api from "@/lib/apis"
+import { useAuth } from "./auth-context"
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -27,8 +19,8 @@ const loginSchema = z.object({
 
 export function LoginForm({ className, ...props }) {
   const navigate = useNavigate()
+  const { login, user } = useAuth()
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
 
   const {
     register,
@@ -38,36 +30,20 @@ export function LoginForm({ className, ...props }) {
     resolver: zodResolver(loginSchema),
   })
 
+  useEffect(() => {
+    if (user?.id) navigate("/dashboard", { replace: true })
+  }, [user?.id, navigate])
+
   const onSubmit = async (data) => {
     try {
       setLoading(true)
-
-      const res = await api.post("auth/login/", {
-        username: data.username,
-        password: data.password,
-      })
-
-      // backend response:
-      // { user, accessToken, refreshToken }
-      login(res.data)
-
-      toast.success("Login successful! Redirecting...")
-
-      console.log("Login response:", res.data)
-
-      setTimeout(() => {
-        navigate("/dashboard")
-      }, 1000)
-
-    } catch (error) {
-      if (error.response?.data) {
-        const backendErrors = Object.values(error.response.data)
-          .flat()
-          .join(" ")
-        toast.error(backendErrors)
-      } else {
-        toast.error("Something went wrong. Try again.")
-      }
+      const res = await api.post("auth/login/", data)
+      const { user: userData, accessToken, refreshToken } = res.data
+      login({ user: userData, accessToken, refreshToken })
+      toast.success("Login successful!")
+      navigate("/dashboard", { replace: true })
+    } catch (err) {
+      toast.error("Invalid username or password")
     } finally {
       setLoading(false)
     }
@@ -75,63 +51,41 @@ export function LoginForm({ className, ...props }) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {/* Back button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="w-fit gap-2"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft className="size-4" />
+      <Button variant="ghost" size="sm" className="w-fit gap-2" onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} />
         Back
       </Button>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
-            <a href="#" className="flex flex-col items-center gap-2 font-medium">
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
+            <Link to="/" className="flex flex-col items-center gap-2 font-medium">
+              <div className="flex h-16 w-16 items-center justify-center rounded-md">
+                <GalleryVerticalEnd size={24} />
               </div>
               <span className="sr-only">TaskFlow</span>
-            </a>
-
+            </Link>
             <h1 className="text-xl font-bold">Welcome to TaskFlow</h1>
             <FieldDescription>
-              Don&apos;t have an account? <a href="/sign">Sign up</a>
+              Don&apos;t have an account? <Link to="/sign">Sign up</Link>
             </FieldDescription>
           </div>
 
           <Field>
             <FieldLabel>Username</FieldLabel>
-            <Input
-              type="text"
-              placeholder="muchemi"
-              {...register("username")}
-            />
-            {errors.username && (
-              <FieldDescription className="text-red-500">
-                {errors.username.message}
-              </FieldDescription>
-            )}
+            <Input type="text" placeholder="Enter username" {...register("username")} />
+            {errors.username && <FieldDescription className="text-red-500">{errors.username.message}</FieldDescription>}
           </Field>
 
           <Field>
             <div className="flex items-center">
               <FieldLabel>Password</FieldLabel>
-              <a
-                href="#"
-                className="ml-auto text-sm underline-offset-2 hover:underline"
-              >
+              <Link to="/forgot-password" className="ml-auto text-sm underline-offset-2 hover:underline">
                 Forgot your password?
-              </a>
+              </Link>
             </div>
             <Input type="password" {...register("password")} />
-            {errors.password && (
-              <FieldDescription className="text-red-500">
-                {errors.password.message}
-              </FieldDescription>
-            )}
+            {errors.password && <FieldDescription className="text-red-500">{errors.password.message}</FieldDescription>}
           </Field>
 
           <Field>
@@ -143,12 +97,8 @@ export function LoginForm({ className, ...props }) {
           <FieldSeparator>Or</FieldSeparator>
 
           <Field className="grid gap-4 sm:grid-cols-2">
-            <Button variant="outline" type="button">
-              Continue with GitHub
-            </Button>
-            <Button variant="outline" type="button">
-              Continue with Google
-            </Button>
+            <Button variant="outline" type="button">Continue with GitHub</Button>
+            <Button variant="outline" type="button">Continue with Google</Button>
           </Field>
         </FieldGroup>
       </form>
