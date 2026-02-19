@@ -15,16 +15,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
-# Required for Traefik / reverse proxy
-CSRF_TRUSTED_ORIGINS = [
-    "https://urbantrends.dev",
-    "https://www.urbantrends.dev",
-    "https://api.urbantrends.dev",
-]
+# # Required for Traefik / reverse proxy
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://urbantrends.dev",
+#     "https://www.urbantrends.dev",
+#     "https://api.urbantrends.dev",
+# ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
@@ -100,7 +100,7 @@ REST_FRAMEWORK = {
 
 # JWT
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
@@ -155,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # INTERNATIONALIZATION
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.getenv("TIME_ZONE")
 USE_I18N = True
 USE_TZ = True
 
