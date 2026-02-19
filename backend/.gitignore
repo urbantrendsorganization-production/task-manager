@@ -65,18 +65,26 @@ coverage.xml
 Thumbs.db
 
 # ===============================
-# Node / Frontend (React)
-# ===============================
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-dist/
-build/
-
-# ===============================
 # Docker
 # ===============================
 *.tar
 docker-data/
+
+# ===============================
+# Celery / Beat
+# ===============================
+celerybeat-schedule
+celerybeat.pid
+*.err
+*.out
+
+# ===============================
+# Redis local data (dev only)
+# ===============================
+redis-data/
+
+# ===============================
+# Docker Compose overrides (optional)
+# ===============================
+docker-compose.override.yml
+

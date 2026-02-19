@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken 
 from .serializers import UserSerializers, UserSerializer
 from django.contrib.auth import authenticate
+from .utils.emails import send_email
+from django.contrib.auth.models import User
 
 # Create your views here.
 def hello(request):
@@ -18,7 +20,12 @@ def createuser(request):
         serializer = UserSerializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"User created": serializer.data}, status=status.HTTP_201_CREATED)
+            email_sent = send_email(
+                subject="Welcome to Urbantrends Task-flow",
+                message=f"Hello {serializer.data['username']}, welcome to Task Manager!",
+                to=[serializer.data['email']]
+            )
+            return Response({"User created": serializer.data, "email_sent": email_sent}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -50,5 +57,11 @@ def login(request):
         "accessToken": str(refresh.access_token),
         "refreshToken": str(refresh)
     }, status=status.HTTP_200_OK)
-    
 
+# get all users
+@api_view(['GET'])
+def get_users(request):
+    
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)

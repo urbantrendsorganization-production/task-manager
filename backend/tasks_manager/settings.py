@@ -13,14 +13,11 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
-SECRET_KEY = os.getenv(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-=n+z+((w*sa(wcfi!#v+5l96jg=r7bc@2d%a_weupas*-fe_mu"
-)
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['149.102.132.191', '127.0.0.1', 'te.urbantrends.dev']
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 # Required for Traefik / reverse proxy
 CSRF_TRUSTED_ORIGINS = [
@@ -44,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'tasks_management',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -87,10 +85,7 @@ DATABASES = {
 # DRF + JWT CONFIGURATION
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
     ],
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
@@ -118,6 +113,30 @@ CORS_ALLOWED_ORIGINS = [
     "https://tasks.urbantrends.dev",
 
 ]
+
+DEFAULT_FROM_EMAIL = "Task Manager <tasks@urbantrends.dev>"
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("DJANGO_EMAIL_HOST")
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv("DJANGO_EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("DJANGO_HOST_PASSWORD")
+
+if not EMAIL_HOST_PASSWORD:
+    raise ValueError("DJANGO_HOST_PASSWORD environment variable is not set.")
+
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = os.getenv("TIME_ZONE")
+
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+
 
 
 # DATABASES = {

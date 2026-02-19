@@ -1,0 +1,12 @@
+import os
+from celery import Celery
+from dotenv import load_dotenv
+
+load_dotenv()
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tasks_manager.settings")
+
+app = Celery("tasks_manager")
+
+app.config_from_object("django.conf:settings", namespace="CELERY")
+app.autodiscover_tasks()
