@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import api from "@/lib/apis"
 import { useAuth } from "./auth-context"
+import publicApi from "@/lib/public-api"
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -37,7 +38,7 @@ export function LoginForm({ className, ...props }) {
   const onSubmit = async (data) => {
     try {
       setLoading(true)
-      const res = await api.post("auth/login/", data)
+      const res = await publicApi.post("auth/login/", data)
       const { user: userData, accessToken, refreshToken } = res.data
       login({ user: userData, accessToken, refreshToken })
       toast.success("Login successful!")

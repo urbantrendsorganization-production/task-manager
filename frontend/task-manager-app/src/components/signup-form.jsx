@@ -24,6 +24,7 @@ import axios from "axios"
 import { useState } from "react"
 import { toast } from "sonner"
 import api from "@/lib/apis"
+import publicApi from "@/lib/public-api"
 
 const signupSchema = z
   .object({
@@ -53,7 +54,7 @@ export function SignupForm({ className, ...props }) {
     try {
       setLoading(true)
 
-      await api.post(
+      await publicApi.post(
         "auth/create/",
         {
           username: data.username,
