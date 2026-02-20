@@ -53,8 +53,8 @@ export function SignupForm({ className, ...props }) {
     try {
       setLoading(true)
 
-      await api.post(
-        "auth/create/",
+      await axios.post(
+        "https://te.urbantrends.dev/auth/create/",
         {
           username: data.username,
           email: data.email,
@@ -62,7 +62,7 @@ export function SignupForm({ className, ...props }) {
         }
       )
 
-      toast.success("Account created successfully 🎉")
+      toast.success("Account created successfully ")
 
       setTimeout(() => {
         navigate("/login")
