@@ -53,8 +53,8 @@ export function SignupForm({ className, ...props }) {
     try {
       setLoading(true)
 
-      await axios.post(
-        "https://te.urbantrends.dev/auth/create/",
+      await api.post(
+        "auth/create/",
         {
           username: data.username,
           email: data.email,
