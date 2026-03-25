@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import api from "@/lib/apis"
 import { toast } from "sonner"
+import { useAuth } from "./auth-context"
 
 const TaskContext = createContext(null)
 
 export function TaskProvider({ children }) {
+  const { isAuthenticated } = useAuth()
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -20,9 +22,14 @@ export function TaskProvider({ children }) {
     }
   }
 
+  // Only fetch when the user is logged in
   useEffect(() => {
-    fetchTasks()
-  }, [])
+    if (isAuthenticated) {
+      fetchTasks()
+    } else {
+      setTasks([])
+    }
+  }, [isAuthenticated])
 
   const addTask = (task) => {
     setTasks((prev) => [task, ...prev])
@@ -47,6 +54,7 @@ export function TaskProvider({ children }) {
         addTask,
         updateTask,
         deleteTask,
+        setTasks,
       }}
     >
       {children}

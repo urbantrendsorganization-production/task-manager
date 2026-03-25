@@ -79,7 +79,11 @@ function DashHeader() {
   const onSubmit = async (data) => {
     setIsSubmitting(true)
     try {
-      const response = await api.post("/task-flow/tasks/", data)
+      const payload = {
+        ...data,
+        due_date: data.due_date || null,
+      }
+      const response = await api.post("/task-flow/tasks/", payload)
       addTask(response.data)
       toast.success("Task created successfully")
       setOpenTaskDialog(false)

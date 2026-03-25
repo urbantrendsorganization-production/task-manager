@@ -23,4 +23,4 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # return the following after logging in
-        fields = ['username', 'email']
+        fields = ['id', 'username', 'email']

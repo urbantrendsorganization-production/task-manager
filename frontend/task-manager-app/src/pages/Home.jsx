@@ -174,7 +174,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
+            <Link to="/sign">
               <Button size="lg" variant="secondary" className="gap-2">
                 Create Free Account
                 <ArrowRight className="size-5" />

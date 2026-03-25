@@ -24,6 +24,7 @@ python-crontab==3.3.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
 redis==7.2.0
+requests==2.32.3
 six==1.17.0
 sqlparse==0.5.5
 typing_extensions==4.15.0

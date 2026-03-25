@@ -51,8 +51,10 @@ import { useTasks } from "../task-context"
 import { Badge } from "../ui/badge"
 import { cn } from "@/lib/utils"
 
-function TaskList() {
-  const { tasks, updateTask, deleteTask, setTasks } = useTasks()
+function TaskList({ tasks: tasksProp }) {
+  const { tasks: contextTasks, updateTask, deleteTask, setTasks } = useTasks()
+  // Prefer the prop (filtered list from Dashboard) but fall back to the full context list
+  const tasks = tasksProp ?? contextTasks
   const [openEditDialog, setOpenEditDialog] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
 
